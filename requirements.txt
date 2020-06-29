@@ -1,0 +1,33 @@
+ariadne
+uvicorn==0.11.2             #default from tiangolo/uvicorn-gunicorn:python3.7 is 0.9.0
+gunicorn==20.0.4            #default from tiangolo/uvicorn-gunicorn:python3.7 is 19.9.0
+asgi-lifespan==0.6.0        #latest is 1.0.0 and is not backward compatible
+python-dotenv==0.10.3
+requests
+graphqlclient==0.2.4
+
+python-dateutil>=2.5.0
+#python-igraph>=0.7.1.post6
+
+numpy>=1.16.1
+scipy>=1.2.1
+scikit-learn==0.21.0
+pandas>=0.20.3
+
+nltk>=3.2.5
+
+pprint
+
+
+#LocalitySensitiveHashing>=1.0.1
+
+#shapely>=1.6.4.post2
+
+#strsim>=0.0.3
+#textdistance>=4.1.4
+#fuzzywuzzy>=0.17.0
+#python-Levenshtein>=0.12.0
+
+#pytz
+
+

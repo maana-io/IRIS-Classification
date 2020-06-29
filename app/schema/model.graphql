@@ -1,0 +1,333 @@
+
+
+#
+#
+#  Data Types
+#
+#
+
+
+type Dataset {
+    id: ID!
+    features: [FeatureData!]!
+}
+
+
+type DataInstance {
+    id: ID!
+    dataset: Dataset!       #filtered to contains only one row
+    index: Int!
+}
+
+
+type LabeledDataset {
+    id: ID!
+    data: Dataset!
+    label: FeatureData!
+}
+
+
+type FeatureData {
+    id: ID!
+    feature: Feature!
+    data: [DataEntry!]!
+}
+
+type Feature {
+    id: ID!
+    index: Int!
+    name: String!
+    type: String!
+}
+
+
+type DataEntry {
+    id: ID!
+    numerical: Float
+    text: String
+    set: [String]
+}
+
+
+#
+#
+#  Configuration Types
+#
+#
+
+
+type ModelSelectionParameters {
+    id: ID!
+    metric: String!
+    method: String!
+    evalMode: String!
+    numFolds: Int
+}
+
+
+type ModelConfiguration {
+    id: ID!
+    type: String!
+    weighting: String!
+    tokenizer: String!
+    ngrams: String!
+    tf: String!
+    df: String!
+    penalty: String!
+    multiclass: String!
+    solver: String!
+    primal_dual: String!
+    fitIntercept: Boolean!
+    max_df: Float!
+    min_df: Float!
+    stopwords: String
+    C: Int
+    max_iter: Int
+}
+
+
+type CandidateModel {
+    id: ID!
+    features: [Feature!]!
+    featurizers: [String!]
+    config: ModelConfiguration
+}
+
+
+type TrainingTask {
+    id: ID!
+    candidate: CandidateModel!
+    data: LabeledDataset!
+    modelSelectionParams: ModelSelectionParameters!
+}
+
+
+#
+# Model Types
+#
+
+
+type Model {
+    id: ID!
+    type: String
+    candidate: CandidateModel
+    labels: [String!]!
+    learnedWeights: [ClassWeights!]!
+    learnedFeaturizers: [Featurizer!]!
+    labelEncoder: LabelEncoder!
+    degreeOfFreedom: Int
+    performance: ModelPerformance!
+    json: String
+}
+
+
+
+
+type ClassWeights {
+    id: ID!
+    class: String!
+    weights: [FeatureWeight!]!
+    intercept: Float
+}
+
+
+type FeatureWeight {
+    id: ID!
+    feature: Feature!
+    weights: [Float!]!
+}
+
+
+#
+# Featurizer Types
+#
+
+
+type Featurizer {
+    id: ID!
+    noop: Noop
+    min_max_scaler: MinMaxScaler
+    label_binarizer: LabelBinarizer
+    tfidf_vectorizer: TfIdfVectorizer
+    multilabel_binarizer: MultiLabelBinarizer
+    label_encoder: LabelEncoder
+    doc_to_vector: Doc2Vector
+}
+
+
+type Noop {
+    id: ID!
+}
+
+
+type MinMaxScaler {
+    id: ID!
+    minValue: Float!
+    maxValue: Float
+    scale: Float!
+    dataMin: Float!
+    dataMax: Float!
+}
+
+
+type LabelBinarizer {
+    id: ID!
+    labels: [String!]!
+}
+
+
+type MultiLabelBinarizer {
+    id: ID!
+    labels: [String!]!
+}
+
+
+type LabelEncoder {
+    id: ID!
+    labels: [String!]!
+}
+
+
+type TermFeatureMapping {
+    id: ID!
+    term: String!
+    featureIdx: Int!
+}
+
+
+type TfIdfVectorizer {
+    id: ID!
+    vocab: [TermFeatureMapping!]!
+    idf: [Float!]!
+    stopwords: [String!]
+}
+
+
+type Doc2Vector {
+    id: ID!
+    modelFile: String!
+    maxNumWords: Int!
+}
+
+
+#
+# Model selection result type
+#
+
+
+type ModelSelectionResults {
+    id: ID!
+    modelSelection: ModelSelectionParameters
+    learnedModels: [Model!]!
+    selectedModel: Model!
+}
+
+
+type Object {
+    id: ID!
+    json: String!
+}
+
+
+#
+# Model performance types
+#
+
+
+type ModelPerformance {
+    id: ID!
+    classPerformances: [ClassPerformance!]!
+    numInstances: Int!
+    avgRecall: Float!
+    avgPrecision: Float!
+    avgF1: Float!
+}
+
+
+type ClassPerformance {
+    id: ID!
+    label: String!
+    weight: Float
+    numInstances: Int!
+    classifiedAs: [ClassificationBucket!]!
+    recall: Float!
+    precision: Float!
+    f1: Float!
+}
+
+
+type ClassificationBucket {
+    id: ID!
+    trueLabel: String!
+    predictedLabel: String!
+    numInstances: Int!
+    weight: Float
+}
+
+
+#
+# Classification result types
+#
+
+
+type ClassificationResult {
+    id: ID!
+    dataInstance: DataInstance!
+    allLabels: [PredictedLabel!]!
+    predictedLabel: PredictedLabel!
+    entropy: Float!
+    contributors: [Contributor!]
+    recommends: [Contributor]
+}
+
+
+type Contributor {
+    id: ID!
+    featureName: String!
+    featureValue: String!
+    weight: Float!
+}
+
+
+type BatchClassificationResult {
+    id: ID!
+    classSummaries: [ClassificationSummary!]!
+}
+
+
+type ClassificationSummary {
+    id: ID!
+    label: String!
+    numInstances: Int!
+    probabilities: [Float!]!
+    entropies: [Float!]!
+    results: [ClassificationResult!]!
+}
+
+
+type PredictedLabel {
+    id: ID!
+    label: String!
+    probability: Float!
+}
+
+
+#
+# User feedback types
+#
+
+
+type User {
+    id: ID!
+    name: String!
+    seniorityLevel: Int!
+}
+
+
+type UserFeedback {
+    id: ID!
+    user: User!
+    feedbackDate: String!
+    feedbackOn: ClassificationResult!
+    correctedLabel: String!
+}

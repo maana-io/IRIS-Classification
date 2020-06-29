@@ -1,0 +1,598 @@
+
+
+schema {
+  query: Query
+}
+
+
+input LabeledDatasetInput {
+    id: ID!
+    data: DatasetInput!
+    label: FeatureDataInput!
+}
+
+
+type AddLabeledDatasetInput {
+    id: ID!
+    data: ID!
+    label: ID!
+}
+
+input DatasetInput {
+    id: ID!
+    features: [FeatureDataInput!]!
+}
+
+type AddDatasetInput {
+    id: ID!
+    features: [ID!]!
+}
+
+
+input FeatureDataInput {
+    id: ID!
+    feature: FeatureInput!
+    data: [DataEntryInput!]!
+}
+
+
+type AddFeatureDataInput {
+    id: ID!
+    feature: ID!
+    data: [ID!]!
+}
+
+
+input DataEntryInput {
+    id: ID!
+    numerical: Float
+    text: String
+    set: [String]
+}
+
+
+input FeatureInput {
+    id: ID!
+    index: Int!
+    name: String!
+    type: String!
+}
+
+
+input ModelSelectionParametersInput {
+    id: ID!
+    metric: String!
+    method: String!
+    evalMode: String!
+    numFolds: Int
+}
+
+
+input ModelConfigurationInput {
+    id: ID!
+    type: String!
+    weighting: String!
+    tokenizer: String!
+    ngrams: String!
+    tf: String!
+    df: String!
+    penalty: String!
+    multiclass: String!
+    solver: String!
+    primal_dual: String!
+    fitIntercept: Boolean!
+    max_df: Float!
+    min_df: Float!
+    stopwords: String
+    C: Int
+    max_iter: Int
+}
+
+
+
+input CandidateModelInput {
+    id: ID!
+    features: [FeatureInput!]!
+    featurizers: [String!]
+    config: ModelConfigurationInput
+}
+
+
+type AddCandidateModelInput {
+    id: ID!
+    features: [ID!]!
+    featurizers: [String!]
+    config: ID
+}
+
+
+input TrainingTaskInput {
+    id: ID!
+    candidate: CandidateModelInput!
+    data: LabeledDatasetInput!
+    modelSelectionParams: ModelSelectionParametersInput!
+}
+
+
+
+input ModelSelectionResultsInput {
+    id: ID!
+    modelSelection: ModelSelectionParametersInput
+    learnedModels: [ModelInput!]!
+    selectedModel: ModelInput!
+}
+
+
+type AddModelSelectionResultsInput {
+    id: ID!
+    modelSelection: ID
+    learnedModels: [ID!]!
+    selectedModel: ID!
+}
+
+
+input ModelInput {
+    id: ID!
+    type: String
+    candidate: CandidateModelInput
+    labels: [String!]!
+    learnedWeights: [ClassWeightsInput!]!
+    learnedFeaturizers: [FeaturizerInput!]!
+    labelEncoder: LabelEncoderInput!
+    degreeOfFreedom: Int
+    performance: ModelPerformanceInput!
+    json: String
+}
+
+
+type AddModelInput {
+    id: ID!
+    type: String
+    candidate: ID
+    labels: [String!]!
+    learnedWeights: [ID!]!
+    learnedFeaturizers: [ID!]!
+    labelEncoder: ID!
+    degreeOfFreedom: Int
+    performance: ID!
+    json: String
+}
+
+
+input ClassWeightsInput {
+    id: ID!
+    class: String!
+    weights: [FeatureWeightInput!]!
+    intercept: Float
+}
+
+
+type AddClassWeightsInput {
+    id: ID!
+    class: String!
+    weights: [ID!]!
+    intercept: Float
+}
+
+
+input FeatureWeightInput {
+    id: ID!
+    feature: FeatureInput!
+    weights: [Float!]!
+}
+
+
+type AddFeatureWeightInput {
+    id: ID!
+    feature: ID!
+    weights: [Float!]!
+}
+
+
+
+
+input FeaturizerInput {
+    id: ID!
+    noop: NoopInput
+    min_max_scaler: MinMaxScalerInput
+    label_binarizer: LabelBinarizerInput
+    tfidf_vectorizer: TfIdfVectorizerInput
+    multilabel_binarizer: MultiLabelBinarizerInput
+    label_encoder: LabelEncoderInput
+    doc_to_vector: Doc2VectorInput
+}
+
+
+
+
+type AddFeaturizerInput {
+    id: ID!
+    noop: ID
+    min_max_scaler: ID
+    label_binarizer: ID
+    tfidf_vectorizer: ID
+    multilabel_binarizer: ID
+    label_encoder: ID
+    doc_to_vector: ID
+}
+
+
+input NoopInput {
+    id: ID!
+}
+
+
+input MinMaxScalerInput {
+    id: ID!
+    minValue: Float!
+    maxValue: Float
+    scale: Float!
+    dataMin: Float!
+    dataMax: Float!
+}
+
+
+input LabelBinarizerInput {
+    id: ID!
+    labels: [String!]!
+}
+
+
+input MultiLabelBinarizerInput {
+    id: ID!
+    labels: [String!]!
+}
+
+
+input LabelEncoderInput {
+    id: ID!
+    labels: [String!]!
+}
+
+
+input TermFeatureMappingInput {
+    id: ID!
+    term: String!
+    featureIdx: Int!
+}
+
+
+input TfIdfVectorizerInput {
+    id: ID!
+    vocab: [TermFeatureMappingInput!]!
+    idf: [Float!]!
+    stopwords: [String!]
+}
+
+
+type AddTfIdfVectorizerInput {
+    id: ID!
+    vocab: [ID!]!
+    idf: [Float!]!
+    stopwords: [String!]
+}
+
+
+input Doc2VectorInput {
+    id: ID!
+    modelFile: String!
+    maxNumWords: Int!
+}
+
+
+
+
+input ModelPerformanceInput {
+    id: ID!
+    classPerformances: [ClassPerformanceInput!]!
+    numInstances: Int!
+    avgRecall: Float!
+    avgPrecision: Float!
+    avgF1: Float!
+}
+
+
+
+type AddModelPerformanceInput {
+    id: ID!
+    classPerformances: [ID!]!
+    numInstances: Int!
+    avgRecall: Float!
+    avgPrecision: Float!
+    avgF1: Float!
+}
+
+
+input ClassPerformanceInput {
+    id: ID!
+    label: String!
+    weight: Float
+    numInstances: Int!
+    classifiedAs: [ClassificationBucketInput!]!
+    recall: Float!
+    precision: Float!
+    f1: Float!
+}
+
+
+type AddClassPerformanceInput {
+    id: ID!
+    label: String!
+    weight: Float
+    numInstances: Int!
+    classifiedAs: [ID!]!
+    recall: Float!
+    precision: Float!
+    f1: Float!
+}
+
+
+input ClassificationBucketInput {
+    id: ID!
+    trueLabel: String!
+    predictedLabel: String!
+    numInstances: Int!
+    weight: Float
+}
+
+
+
+input DataInstanceInput {
+    id: ID!
+    dataset: DatasetInput!       #filtered to contains only one row
+    index: Int!
+}
+
+
+
+type AddDataInstanceInput {
+    id: ID!
+    dataset: ID!       #filtered to contains only one row
+    index: Int!
+}
+
+
+input ClassificationResultInput {
+    id: ID!
+    dataInstance: DataInstanceInput!
+    allLabels: [PredictedLabelInput!]!
+    predictedLabel: PredictedLabelInput!
+    entropy: Float!
+    contributors: [ContributorInput!]
+    recommends: [ContributorInput]
+}
+
+
+
+type AddClassificationResultInput {
+    id: ID!
+    dataInstance: ID!
+    allLabels: [ID!]!
+    predictedLabel: ID!
+    entropy: Float!
+    contributors: [ID!]
+    recommends: [ID]
+}
+
+
+input ContributorInput {
+    id: ID!
+    featureName: String!
+    featureValue: String!
+    weight: Float!
+}
+
+
+input BatchClassificationResultInput {
+    id: ID!
+    classSummaries: [ClassificationSummaryInput!]!
+}
+
+
+type AddBatchClassificationResultInput {
+    id: ID!
+    classSummaries: [ID!]!
+}
+
+
+input ClassificationSummaryInput {
+    id: ID!
+    label: String!
+    numInstances: Int!
+    probabilities: [Float!]!
+    entropies: [Float!]!
+    results: [ClassificationResultInput!]!
+}
+
+type AddClassificationSummaryInput {
+    id: ID!
+    label: String!
+    numInstances: Int!
+    probabilities: [Float!]!
+    entropies: [Float!]!
+    results: [ID!]!
+}
+
+
+input PredictedLabelInput {
+    id: ID!
+    label: String!
+    probability: Float!
+}
+
+
+input ObjectInput {
+    id: ID!
+    json: String!
+}
+
+
+
+type Query {
+
+    #train
+    getTrainedModel(msr: ModelSelectionResultsInput!): Model!
+    loadModelSelectionResults(obj: ObjectInput!): ModelSelectionResults!
+    modelSelectionResultsToObject(savedId: ID!, msr: ModelSelectionResultsInput!): Object!
+
+    train(trainingTask: TrainingTaskInput!): Model!
+    modelSelection(models: [ModelInput!]!, modelSel: ModelSelectionParametersInput!): ModelSelectionResults!
+
+    classify(model: ModelInput, cachedModelID: ID, data: DatasetInput!): BatchClassificationResult!
+
+    # active learning
+
+    # Configuration helpers
+    defaultModelConfiguration: ModelConfiguration!
+    defaultModelSelection: ModelSelectionParameters!
+    defaultFeaturizers(features: [FeatureInput!]!): [String!]!
+
+    createModelConfiguration(
+        type: String!
+        weighting: String!
+        tokenizer: String!
+        ngrams: String!
+        tf: String!
+        df: String!
+        penalty: String!
+        multiclass: String!
+        solver: String!
+        primal_dual: String!
+        fitIntercept: Boolean!
+        max_df: Float!
+        min_df: Float!
+        stopwords: String,
+        C: Int
+        max_iter: Int
+    ): ModelConfiguration!
+
+    createModelSelection(
+        metric: String!
+        method: String!
+        evalMode: String!
+        numFolds: Int
+    ): ModelSelectionParameters!
+
+    # Candidate creation helpers
+    defaultCandidate(dataset: LabeledDatasetInput!): [CandidateModel!]!
+    createCandidate(features: [FeatureInput!]!, featurizers: [String!]!,
+           config: ModelConfigurationInput!): CandidateModel!
+
+    createTrainingTasks(candidates: [CandidateModelInput!]!, training_data: LabeledDatasetInput!,
+           params: ModelSelectionParametersInput!): [TrainingTask!]!
+
+
+    # candidates and features helpers
+    addCandidate(addThis: CandidateModelInput!, toThis: [CandidateModelInput]): [CandidateModel!]!
+    addFeaturizer(addThis: String!, toThis: [String]): [String!]!
+
+    # Feature selection helpers
+    defaultFeatures(dataset: LabeledDatasetInput!): [Feature!]!
+    subsetFeatures(dataset: LabeledDatasetInput!, selectedFeatures: [Int!]!): [Feature!]!
+
+    topNCorrelatedFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!,  topN: Int!): [Feature!]!
+    topNPctCorrelatedFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!, pct: Float!): [Feature!]!
+
+    topNRFEFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!, topN: Int!): [Feature!]!
+    topNPctRFEFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!, pct: Float!): [Feature!]!
+
+    # Enum type helpers
+    numericalFeatureType: String!
+    categoricalFeatureType: String!
+    textFeatureType: String!
+    setFeatureType: String!
+    booleanFeatureType: String!
+    labelFeatureType: String!
+
+    noopFeaturizerType: String!
+    minMaxScalerFeaturizerType: String!
+    labelBinarizerFeaturizerType: String!
+    tfidfVectorizerFeaturizerType: String!
+    multilabelBinarizerFeaturizerType: String!
+    labelEncoderFeaturizerType: String!
+    textToVectorFeaturizerType: String!
+
+    correlationFeatureSelectionMode: String!
+    rfeFeatureSelectionMode: String!
+
+    logisticRegressionModelType: String!
+    linearSVCModelType: String!
+
+    noneClassWeightingType: String!
+    balancedClassWeightingType: String!
+
+    unigramNGramType: String!
+    bigramNGramType: String!
+    bothNGramType: String!
+
+    linearTermFreqType: String!
+    sublinearTermFreqType: String!
+
+    defaultDocumentFreqType: String!
+    smoothDocumentFreqType: String!
+
+    l1PenaltyType: String!
+    l2PenaltyType: String!
+
+    ovrMultiClassType: String!
+    multinomialMultiClassType: String!
+    autoMultiClassType: String!
+
+    liblinearSolverType: String!
+    newtonCGSolverType: String!
+    lbfgsSolverType: String!
+    sagSolverType: String!
+    sagaSolverType: String!
+
+    primalMode: String!
+    dualMode: String!
+
+    wordTokenizerType: String!
+    stemmerTokenizerType: String!
+    lemmatizerTokenizerType: String!
+
+    precisionModelSelectionMetric: String!
+    recallModelSelectionMetric: String!
+    f1ModelSelectionMetric: String!
+
+    bestModelModelSelectionMethod: String!
+    kneePointModelSelectionMethod: String!
+    oneStdevModelSelectionMethod: String!
+    twoStdevModelSelectionMethod: String!
+
+    looModelEvaluationType: String!
+    kFoldsModelEvaluationType: String!
+
+    noneStopWordType: String!
+    englishStopWordType: String!
+
+
+    #boolean values helpers
+    booleanTrue: Boolean!
+    booleanFalse: Boolean!
+
+
+    # numerical values helpers
+    intAddToList(addThis: Int!, toThis: [Int]): [Int!]!
+    intAddTwoLists(addThis: [Int!]!, toThis: [Int]): [Int!]!
+    intZero: Int!
+    intOne: Int!
+    intTwo: Int!
+    intFive: Int!
+    intTen: Int!
+    intTwenty: Int!
+    intFifty: Int!
+    intHundred: Int!
+
+    intToFloat(intVal: Int!): Float!
+
+    mul(intVal1: Int!, intVal2: Int!): Int!
+    div(intVal1: Int!, intVal2: Int!): Float!
+    add(intVal1: Int!, intVal2: Int!): Int!
+    subs(intVal1: Int!, intVal2: Int!): Int!
+
+    # data manipulation helpers
+    extractLabelData(data: LabeledDatasetInput!): FeatureData!
+
+}
+
