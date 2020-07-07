@@ -11,12 +11,13 @@ logger = logging.getLogger(__name__)
 
 resolvers = {
     'Query': {
-        'train': lambda value, info, **args: train(args['trainingTask']),
-        'modelSelection': lambda value, info, **args: model_selection(args['models'], args['modelSel']),
-        'classify': lambda value, info, **args: classify(args['model'] if 'model' in args else None,
-            args['cachedModelID'] if 'cachedModelID' in args else None, args['data']),
+        #'train': lambda value, info, **args: train(args['trainingTask']),
+        'train_batch': lambda value, info, **args: train_batch(args['candidates'], args['training_data'],
+            args['params'], args['model_id']),
+        'get_training_results': lambda value, info, **args: get_training_results(args['model_id']),
+        #'modelSelection': lambda value, info, **args: model_selection(args['models'], args['modelSel']),
+        'classify': lambda value, info, **args: classify(args['cachedModelID'], args['data']),
 
-        'getTrainedModel': lambda value, info, **args: args['msr']['selectedModel'],
         'loadModelSelectionResults': lambda value, info, **args: loadModelSelectionResults(args['obj']),
         'modelSelectionResultsToObject': lambda value, info, **args: modelSelectionResultsToObject(args['savedId'], args['msr']),
 
@@ -35,8 +36,8 @@ resolvers = {
         ),
         'createCandidate':  lambda value, info, **args: createCandidate(args['features'], args['featurizers'], args['config']),
         'addCandidate':  lambda value, info, **args: addToList(args['addThis'], args.get('toThis', None)),
-        'createTrainingTasks': lambda value, info, **args:  createTrainingTasks(args['candidates'],
-                args['training_data'], args['params']),
+        #'createTrainingTasks': lambda value, info, **args:  createTrainingTasks(args['candidates'],
+        #        args['training_data'], args['params']),
 
         'addFeaturizer':  lambda value, info, **args: addToList(args['addThis'], args.get('toThis', None)),
         'subsetFeatures': lambda value, info, **args:  subsetFeatures(args['dataset'], args['selectedFeatures']),
@@ -113,26 +114,6 @@ resolvers = {
         
         'noneStopWordType': lambda value, info, **args: 'NONE',
         'englishStopWordType': lambda value, info, **args: 'ENGLISH',
-
-        'booleanTrue':  lambda value, info, **args: True,
-        'booleanFalse':  lambda value, info, **args: False,
-
-        'intZero': lambda value, info, **args: 0,
-        'intOne': lambda value, info, **args: 1,
-        'intTwo': lambda value, info, **args: 2,
-        'intFive': lambda value, info, **args: 5,
-        'intTen': lambda value, info, **args: 10,
-        'intTwenty': lambda value, info, **args: 20,
-        'intFifty': lambda value, info, **args: 50,
-        'intHundred': lambda value, info, **args: 100,
-        'intToFloat': lambda value, info, **args: 1.0 * args['intVal'],
-        'mul': lambda value, info, **args: args['intVal1'] * args['intVal2'],
-        'div': lambda value, info, **args: args['intVal1'] * 1.0 / args['intVal2'],
-        'add': lambda value, info, **args: args['intVal1'] + args['intVal2'],
-        'subs': lambda value, info, **args: args['intVal1'] - args['intVal2'],
-        'intAddToList':  lambda value, info, **args: addToList(args['addThis'], args.get('toThis', None)),
-        'intAddTwoLists':  lambda value, info, **args: addTwoLists(args['addThis'], args.get('toThis', None)),
-        'extractLabelData':  lambda value, info, **args: extract(args['data'], ["label"]),
     },
     'Object': {
     },

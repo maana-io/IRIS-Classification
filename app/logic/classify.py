@@ -4,10 +4,7 @@ import datetime
 from app.logic.helpers import datasetToDataframe, dataframeToDataset, id
 from app.core.main.Classifier import Classifier
 from app.logic.train import loadTrainedModel
-
-
-
-cachedModels = {}
+from app.logic.model_selection import cachedMSR
 
 
 
@@ -76,21 +73,10 @@ def unpackSuggestedFeatures(suggestions):
 
 
 
-def classify(model, cachedModelID, data):
+def classify(cachedModelID, data):
     startedTime = datetime.datetime.now()
-    global cachedModels
-    if model is not None:
-        cachedModels[cachedModelID] = model
-        print('Model cached.')
-    elif cachedModelID in cachedModels:
-        model = cachedModels[cachedModelID]
-        print('Model loaded from cache.')
-
-    assert(model is not None), "No model provided, and there is no cached model."
-
-    print('Model ready time:' + str((datetime.datetime.now() - startedTime).total_seconds()) + ' seconds ')
-    startedTime = datetime.datetime.now()
-
+    assert(cachedModelID in cachedMSR), "Model not found."
+    model = cachedMSR[cachedModelID]['selectedModel']
 
     emptyResults = {
         'id': -1,
@@ -110,10 +96,6 @@ def classify(model, cachedModelID, data):
     candidate = model["candidate"]
     features = candidate["features"]
     config = candidate["config"]
-
-    # #debug
-    # print('Model features:', len(features), [f['name'] for f in features])
-    # print('Dataset features:', len(data['features']), [f['feature']['name'] for f in data['features']])
 
     unlabeled_df = datasetToDataframe(data)
     filtered_input_df = unlabeled_df.filter([f['name'] for f in features])

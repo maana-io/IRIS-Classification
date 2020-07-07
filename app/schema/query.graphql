@@ -431,14 +431,18 @@ input ObjectInput {
 type Query {
 
     #train
-    getTrainedModel(msr: ModelSelectionResultsInput!): Model!
     loadModelSelectionResults(obj: ObjectInput!): ModelSelectionResults!
     modelSelectionResultsToObject(savedId: ID!, msr: ModelSelectionResultsInput!): Object!
 
-    train(trainingTask: TrainingTaskInput!): Model!
-    modelSelection(models: [ModelInput!]!, modelSel: ModelSelectionParametersInput!): ModelSelectionResults!
+    #train(trainingTask: TrainingTaskInput!): Model!
+    train_batch(candidates: [CandidateModelInput!]!, training_data: LabeledDatasetInput!,
+                           params: ModelSelectionParametersInput!, model_id: ID!): ModelSelectionResults!
+    get_training_results(model_id: ID!): ModelSelectionResults!
 
-    classify(model: ModelInput, cachedModelID: ID, data: DatasetInput!): BatchClassificationResult!
+
+    #modelSelection(models: [ModelInput!]!, modelSel: ModelSelectionParametersInput!): ModelSelectionResults!
+
+    classify(cachedModelID: ID, data: DatasetInput!): BatchClassificationResult!
 
     # active learning
 
@@ -478,8 +482,8 @@ type Query {
     createCandidate(features: [FeatureInput!]!, featurizers: [String!]!,
            config: ModelConfigurationInput!): CandidateModel!
 
-    createTrainingTasks(candidates: [CandidateModelInput!]!, training_data: LabeledDatasetInput!,
-           params: ModelSelectionParametersInput!): [TrainingTask!]!
+    #createTrainingTasks(candidates: [CandidateModelInput!]!, training_data: LabeledDatasetInput!,
+    #       params: ModelSelectionParametersInput!): [TrainingTask!]!
 
 
     # candidates and features helpers
@@ -565,34 +569,5 @@ type Query {
 
     noneStopWordType: String!
     englishStopWordType: String!
-
-
-    #boolean values helpers
-    booleanTrue: Boolean!
-    booleanFalse: Boolean!
-
-
-    # numerical values helpers
-    intAddToList(addThis: Int!, toThis: [Int]): [Int!]!
-    intAddTwoLists(addThis: [Int!]!, toThis: [Int]): [Int!]!
-    intZero: Int!
-    intOne: Int!
-    intTwo: Int!
-    intFive: Int!
-    intTen: Int!
-    intTwenty: Int!
-    intFifty: Int!
-    intHundred: Int!
-
-    intToFloat(intVal: Int!): Float!
-
-    mul(intVal1: Int!, intVal2: Int!): Int!
-    div(intVal1: Int!, intVal2: Int!): Float!
-    add(intVal1: Int!, intVal2: Int!): Int!
-    subs(intVal1: Int!, intVal2: Int!): Int!
-
-    # data manipulation helpers
-    extractLabelData(data: LabeledDatasetInput!): FeatureData!
-
 }
 

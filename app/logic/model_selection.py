@@ -1,17 +1,20 @@
 
 import sys
 import numpy as np
+import datetime
 
-#import pprint
-from app.logic.train import evaluate, train, id
-
-#pp = pprint.PrettyPrinter(indent=3)
+from app.logic.train import *
+from app.logic.helpers import *
 
 import logging
 from app.settings import LOG_LEVEL
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=LOG_LEVEL)
+
+
+
+cachedMSR = {}
 
 
 def model_selection(models, model_sel):
@@ -108,3 +111,25 @@ def two_stdev(metrics, degree_of_freedom):
     return opt_idx
 
 
+
+def train_batch(candidates, training_data, model_selection_params, model_id):
+    startedTime = datetime.datetime.now()
+    global cachedMSR
+
+    training_tasks = createTrainingTasks(candidates, training_data, model_selection_params)
+    trained_models = list(map(train, training_tasks))
+    msr = model_selection(trained_models, model_selection_params)
+    msr['id'] = model_id
+
+    cachedMSR[model_id] = msr
+
+    seconds = (datetime.datetime.now() - startedTime).total_seconds()
+    print('Trained ' + str(len(training_tasks)) + ' models in ' + str(seconds//60) + ' minutes ' + str(seconds%60) + ' seconds.')
+    print('Model ' + str(model_id) + ' cached.')
+
+    return msr
+
+
+def get_training_results(model_id):
+    assert(model_id in cachedMSR), 'Training results with given ID not found.'
+    return cachedMSR[model_id]

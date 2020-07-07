@@ -19,22 +19,6 @@ def id():
 
 
 
-def addToList(addThis, toThis):
-    if toThis is None:
-        return [addThis]
-    else:
-        toThis.append(addThis)
-        return toThis
-
-
-
-def addTwoLists(addThis, toThis):
-    if toThis is None:
-        return addThis
-    else:
-        return toThis + addThis
-
-
 
 
 def extract(datasource, fields):
