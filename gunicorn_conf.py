@@ -27,7 +27,7 @@ loglevel = use_loglevel
 workers = web_concurrency
 bind = use_bind
 keepalive = 120                                 #seconds
-timeout=1800
+timeout=3600
 errorlog = "-"
 accesslog = "-"
 
