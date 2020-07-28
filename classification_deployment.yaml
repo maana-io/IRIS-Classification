@@ -13,7 +13,7 @@ spec:
         service: "classification"
     spec:
       containers:
-      - image: "mkdrservices.azurecr.io/classification:v3.0.36"
+      - image: "mkdrservices.azurecr.io/classification:v3.0.37"
         name: "classification"
         ports:
         - containerPort: 8050
