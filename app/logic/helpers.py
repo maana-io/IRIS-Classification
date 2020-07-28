@@ -305,3 +305,12 @@ def create_classifier(config):
         'C': config['C'],
         'max_iter': config['max_iter']
     })
+
+
+
+def addToList(addThis, toThis):
+    if toThis is None:
+        return [addThis]
+    else:
+        toThis.append(addThis)
+        return toThis
