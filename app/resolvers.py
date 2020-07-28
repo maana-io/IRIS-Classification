@@ -15,6 +15,7 @@ resolvers = {
         'train_batch': lambda value, info, **args: train_batch(args['candidates'], args['training_data'],
             args['params'], args['model_id']),
         'get_training_results': lambda value, info, **args: get_training_results(args['model_id']),
+        'delete_training_results': lambda value, info, **args: delete_training_results(args['model_id']),
         #'modelSelection': lambda value, info, **args: model_selection(args['models'], args['modelSel']),
         'classify': lambda value, info, **args: classify(args['cachedModelID'], args['data']),
 

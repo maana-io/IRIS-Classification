@@ -2,12 +2,14 @@
 import sys
 import numpy as np
 import datetime
+import logging
+from pathlib import Path
+import pickle
+import os
 
 from app.logic.train import *
 from app.logic.helpers import *
-
-import logging
-from app.settings import LOG_LEVEL
+from app.settings import *
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=LOG_LEVEL)
@@ -15,6 +17,7 @@ logging.basicConfig(stream=sys.stdout, level=LOG_LEVEL)
 
 
 cachedMSR = {}
+
 
 
 def model_selection(models, model_sel):
@@ -122,6 +125,7 @@ def train_batch(candidates, training_data, model_selection_params, model_id):
     msr['id'] = model_id
 
     cachedMSR[model_id] = msr
+    save_training_results(model_id)
 
     seconds = (datetime.datetime.now() - startedTime).total_seconds()
     print('Trained ' + str(len(training_tasks)) + ' models in ' + str(seconds//60) + ' minutes ' + str(seconds%60) + ' seconds.')
@@ -130,6 +134,65 @@ def train_batch(candidates, training_data, model_selection_params, model_id):
     return msr
 
 
+
+def delete_training_results(model_id):
+    assert(model_id in cachedMSR), 'Model ID ' + str(model_id) + ' not found.'
+    cachedMSR.pop(model_id)
+    remove_model(model_id)
+    return model_id
+
+
+
 def get_training_results(model_id):
+    global cachedMSR
+
     assert(model_id in cachedMSR), 'Training results with given ID not found.'
     return cachedMSR[model_id]
+
+
+
+def save_training_results(model_id):
+    global cachedMSR
+
+    assert(model_id in cachedMSR), 'Training results with given ID not found.'
+    path = Path(CLASSIFICATION_DATA_DIR)
+    path.mkdir(parents=True, exist_ok=True)
+    output = open(CLASSIFICATION_DATA_DIR + "/" + model_id + ".pkl", 'wb')
+    pickle.dump({model_id: cachedMSR[model_id]}, output)
+    output.close()
+    print("Model " + str(model_id) + " saved.")
+
+
+
+def load_models():
+    global cachedMSR
+
+    path = Path(CLASSIFICATION_DATA_DIR)
+    path.mkdir(parents=True, exist_ok=True)
+    fileNames = os.listdir(CLASSIFICATION_DATA_DIR)
+    print("Loading models from " + CLASSIFICATION_DATA_DIR)
+    for fname in fileNames:
+        modelDataFile = Path(CLASSIFICATION_DATA_DIR + "/" + fname)
+        if modelDataFile.is_file():
+            datafile = open(CLASSIFICATION_DATA_DIR + "/" + fname, 'rb')
+            modelData = pickle.load(datafile)
+            cachedMSR.update(modelData)
+            datafile.close()
+            print("Model " + fname + " loaded.")
+    print(str(len(cachedMSR)) + " models loaded from " + CLASSIFICATION_DATA_DIR)
+    return cachedMSR
+
+
+
+def remove_model(model_id):
+    filename = CLASSIFICATION_DATA_DIR + "/" + model_id + ".pkl"
+    modelData = Path(filename)
+    if modelData.is_file():
+        os.remove(filename)
+        print("Model " + str(model_id) + " deleted.")
+    else:
+        print("Model " + str(model_id) + " not found.")
+
+
+
+cachedMSR = load_models()
