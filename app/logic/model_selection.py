@@ -195,4 +195,10 @@ def remove_model(model_id):
 
 
 
+def all_training_results():
+    return list(cachedMSR.values())
+
+
+
+
 cachedMSR = load_models()

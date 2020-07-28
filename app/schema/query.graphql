@@ -438,6 +438,7 @@ type Query {
     train_batch(candidates: [CandidateModelInput!]!, training_data: LabeledDatasetInput!,
                            params: ModelSelectionParametersInput!, model_id: ID!): ModelSelectionResults!
     get_training_results(model_id: ID!): ModelSelectionResults!
+    all_training_results: [ModelSelectionResults!]
     delete_training_results(model_id: ID!): ID!
 
     #modelSelection(models: [ModelInput!]!, modelSel: ModelSelectionParametersInput!): ModelSelectionResults!
