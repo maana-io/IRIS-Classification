@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service: "classification"
+  name: "classification"
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: "classification"
+    spec:
+      containers:
+      - image: "mkdrservices.azurecr.io/classification:v3.0.36"
+        name: "classification"
+        ports:
+        - containerPort: 8050
+        resources: {}
+        volumeMounts:
+          - mountPath: /usr/share/
+            name: classification-pv-storage
+      restartPolicy: Always
+      volumes:
+        - name: classification-pv-storage
+          persistentVolumeClaim:
+            claimName: maana-classification-service-db-claim

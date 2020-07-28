@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "classification"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "8050"
+    port: 8050
+    targetPort: 8050
+  selector:
+    service: "classification"
