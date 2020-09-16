@@ -82,7 +82,7 @@ class LR(object):
                     })
                 else:
                     params.update({
-                        'intercept': [self.__model.intercept_.tolist(), self.__model.intercept_.tolist()],
+                        'intercept': [self.__model.intercept_[0], self.__model.intercept_[0]],
                     })
             else:
                 params.update({
@@ -94,7 +94,7 @@ class LR(object):
                 })
             else:
                 params.update({
-                    'coef': [self.__model.coef_[0].tolist(), self.__model.coef_[0].tolist()],
+                    'coef': [self.__model.coef_.tolist(), self.__model.coef_.tolist()],
                 })
         return params
 
@@ -104,9 +104,15 @@ class LR(object):
         if 'classes' in params:
             self.__model.classes_ = np.asarray(params['classes'], dtype=np.int32)
         if 'coef' in params:
-            self.__model.coef_ = np.asarray(params['coef'], dtype=np.float64)
+            if len(self.__model.classes_) > 2:
+                self.__model.coef_ = np.asarray(params['coef'], dtype=np.float64)
+            else:
+                self.__model.coef_ = np.asarray(params['coef'][0], dtype=np.float64)
         if 'intercept' in params:
-            self.__model.intercept_ = np.asarray(params['intercept'], dtype=np.float64)
+            if len(self.__model.classes_) > 2:
+                self.__model.intercept_ = np.asarray(params['intercept'], dtype=np.float64)
+            else:
+                self.__model.intercept_ = np.asarray(params['intercept'][:1], dtype=np.float64)
         if 'penalty' in params:
             self.__penalty = params['penalty']
         if 'dual' in params:

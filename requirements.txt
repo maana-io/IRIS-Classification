@@ -16,7 +16,7 @@ pandas>=0.20.3
 
 nltk>=3.2.5
 
-pprint
+#pprint
 
 
 #LocalitySensitiveHashing>=1.0.1
