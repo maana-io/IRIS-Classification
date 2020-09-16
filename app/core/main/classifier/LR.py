@@ -82,7 +82,7 @@ class LR(object):
                     })
                 else:
                     params.update({
-                        'intercept': [self.__model.intercept_, self.__model.intercept_],
+                        'intercept': [self.__model.intercept_.tolist(), self.__model.intercept_.tolist()],
                     })
             else:
                 params.update({
