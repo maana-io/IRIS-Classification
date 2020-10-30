@@ -5,17 +5,17 @@ if [ "$#" -ne 2 ]; then
     exit
 fi
 
-$registry=$1
-$version=$2
+registry=$1
+version=$2
 
 docker build -t classification .
-docker tag classification ${1}/classification:${2}
-docker push ${1}/classification:${2}
+docker tag classification ${registry}/classification:${version}
+docker push ${registry}/classification:${version}
 
 kubectl delete service classification
 kubectl delete deployment classification
 
-cat classification_deployment.yaml | sed -e "s/{{docker-registry}}/$registry/g" -e "s/{{version}}/$version/g"> finalized_classification_deployment.yaml
+cat classification_deployment.yaml | sed -e "s/{{docker-registry}}/${registry}/g" -e "s/{{version}}/${version}/g"> finalized_classification_deployment.yaml
 
 #kubectl apply -f classification_pvc.yaml
 kubectl apply -f finalized_classification_deployment.yaml
