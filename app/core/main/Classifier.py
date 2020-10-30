@@ -112,10 +112,14 @@ class Classifier(object):
                         ngram_range=self.__model_configuration["ngram_range"],
                         tokenizer=self.__model_configuration["tokenizer"]
                         )
-
+        #debug
+        print("train: feature transforming ...")
         features = fm.fit_transform(train_data)
+
+        print("train: label transforming ...")
         labels = lm.fit_transform(labelData)
 
+        print("train: model fitting ...")
         m.fit(features, labels)
         self.__model = m
         self.__featurizer = fm

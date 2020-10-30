@@ -314,3 +314,57 @@ def addToList(addThis, toThis):
     else:
         toThis.append(addThis)
         return toThis
+
+
+
+def mergeDatasets(datasets):
+    if len(datasets) == 0:
+        return {
+            'id': -1,
+            'features': []
+        }
+
+    featureData = {}
+    nonEmptyDSIdx = 0
+    #merge by feature name, as feature IDs are randomized
+    for dsidx, ds in enumerate(datasets):
+        if len(ds['features']) > 0 and len(ds['features'][0]['data']) > 0:
+            nonEmptyDSIdx = dsidx
+        for featData in ds['features']:
+            if featData['feature']['name'] not in featureData:
+                featureData[featData['feature']['name']] = featData
+            else:
+                featureData[featData['feature']['name']]['data'] += featData['data']
+    return {
+        'id': datasets[nonEmptyDSIdx]['id'],
+        'features': featureData.values()
+    }
+
+
+def mergeLabeledDatasets(labeledDatasets):
+    if len(labeledDatasets) == 0:
+        return {
+            'id': -1,
+            'data': {'id': -1, 'features': []},
+            'label': { 'id': -1, 'feature': {'id': -1, 'index': -1, 'name': '', 'type': ''}, 'data': []}
+        }
+
+    datasets = [lds['data'] for lds in labeledDatasets]
+    dataset = mergeDatasets(datasets)
+
+    allLabels = []
+    nonEmptyLdsIdx = 0
+    for ldsIdx, lds in enumerate(labeledDatasets):
+        lbls = lds['label']['data']
+        if len(lbls) > 0:
+            allLabels += lbls
+            nonEmptyLdsIdx = ldsIdx
+    return {
+        'id': dataset['id'],
+        'data': dataset,
+        'label': {
+            'id':labeledDatasets[nonEmptyLdsIdx]['label']['id'],
+            'feature': labeledDatasets[nonEmptyLdsIdx]['label']['feature'],
+            'data': allLabels
+        }
+    }

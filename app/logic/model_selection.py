@@ -1,6 +1,7 @@
 
 import sys
 import numpy as np
+import pandas as pd
 import datetime
 import logging
 from pathlib import Path
@@ -135,6 +136,35 @@ def train_batch(candidates, training_data, model_selection_params, model_id):
 
 
 
+def train_from_local_data(candidates, schema, training_data_file_name, model_selection_params, model_id):
+    training_data = loadLocalData(schema, training_data_file_name)
+    if training_data is not None:
+        return train_batch(candidates, training_data, model_selection_params, model_id)
+    else:
+        print("Can't read data from file " + training_data_file_name)
+        return None
+
+
+
+def loadLocalData(schema, file_name):
+    dataFile = Path(CLASSIFICATION_DATA_DIR + "/" + file_name)
+    if dataFile.is_file():
+        df = pd.read_csv(dataFile)
+        for feat in schema['data']['features'] + [schema['label']]:
+            col = feat['feature']['name']
+            cType = feat['feature']['type']
+            prop_name = 'numerical' if cType in ['NUMERICAL'] else 'set' if cType in ['SET'] else 'text'
+            if prop_name == 'numerical':
+                feat['data'] = [{ 'id': id(), prop_name: float(val) } for val in df[col].values]
+            else:
+                feat['data'] = [{ 'id': id(), prop_name: str(val) } for val in df[col].values]
+        return schema
+    else:
+        return None
+
+
+
+
 def delete_training_results(model_id):
     assert(model_id in cachedMSR), 'Model ID ' + str(model_id) + ' not found.'
     cachedMSR.pop(model_id)
@@ -155,9 +185,9 @@ def save_training_results(model_id):
     global cachedMSR
 
     assert(model_id in cachedMSR), 'Training results with given ID not found.'
-    path = Path(CLASSIFICATION_DATA_DIR)
+    path = Path(CLASSIFICATION_MODEL_DIR)
     path.mkdir(parents=True, exist_ok=True)
-    output = open(CLASSIFICATION_DATA_DIR + "/" + model_id + ".pkl", 'wb')
+    output = open(CLASSIFICATION_MODEL_DIR + "/" + model_id + ".pkl", 'wb')
     pickle.dump({model_id: cachedMSR[model_id]}, output)
     output.close()
     print("Model " + str(model_id) + " saved.")
@@ -167,25 +197,25 @@ def save_training_results(model_id):
 def load_models():
     global cachedMSR
 
-    path = Path(CLASSIFICATION_DATA_DIR)
+    path = Path(CLASSIFICATION_MODEL_DIR)
     path.mkdir(parents=True, exist_ok=True)
-    fileNames = os.listdir(CLASSIFICATION_DATA_DIR)
-    print("Loading models from " + CLASSIFICATION_DATA_DIR)
+    fileNames = os.listdir(CLASSIFICATION_MODEL_DIR)
+    print("Loading models from " + CLASSIFICATION_MODEL_DIR)
     for fname in fileNames:
-        modelDataFile = Path(CLASSIFICATION_DATA_DIR + "/" + fname)
+        modelDataFile = Path(CLASSIFICATION_MODEL_DIR + "/" + fname)
         if modelDataFile.is_file():
-            datafile = open(CLASSIFICATION_DATA_DIR + "/" + fname, 'rb')
+            datafile = open(CLASSIFICATION_MODEL_DIR + "/" + fname, 'rb')
             modelData = pickle.load(datafile)
             cachedMSR.update(modelData)
             datafile.close()
             print("Model " + fname + " loaded.")
-    print(str(len(cachedMSR)) + " models loaded from " + CLASSIFICATION_DATA_DIR)
+    print(str(len(cachedMSR)) + " models loaded from " + CLASSIFICATION_MODEL_DIR)
     return cachedMSR
 
 
 
 def remove_model(model_id):
-    filename = CLASSIFICATION_DATA_DIR + "/" + model_id + ".pkl"
+    filename = CLASSIFICATION_MODEL_DIR + "/" + model_id + ".pkl"
     modelData = Path(filename)
     if modelData.is_file():
         os.remove(filename)

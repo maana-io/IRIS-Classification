@@ -55,6 +55,7 @@ class Featurizer(object):
         self.__smooth_idf = smooth_idf
         self.__ngram_range = ngram_range
 
+        self.__feats = None
 
 
 
@@ -92,6 +93,9 @@ class Featurizer(object):
         self.__featurizer_end_offset = []
         feat_offset = 0
         for (fieldNo, (fieldName, fieldData)) in enumerate(data.iteritems()):
+            #debug
+            print('Featurizer: fitting ' + fieldName)
+
             m = self.__type_featurizer_map(self.__field_types[fieldNo])
 
             if self.__field_types[fieldNo] in [Featurizer.FT_Numeric, Featurizer.FT_MIN_MAX_SCALER]:
@@ -144,9 +148,12 @@ class Featurizer(object):
         '''
         assert isinstance(data, pd.DataFrame), "Expect a DataFrame object"
 
-        feats = None
+        self.__feats = None
         this_col_feats = None
         for (fieldNo, (fieldName, fieldData)) in enumerate(data.iteritems()):
+            #debug
+            print('Featurizer: transforming ' + fieldName)
+
             m = self.__models[fieldNo]
             if self.__field_types[fieldNo] in [Featurizer.FT_Numeric, Featurizer.FT_MIN_MAX_SCALER]:
                 this_col_feats = m.transform(fieldData.values.reshape(-1, 1))
@@ -170,11 +177,11 @@ class Featurizer(object):
 
             if issparse(this_col_feats):
                 this_col_feats = this_col_feats.todense()
-            if feats is None:
-                feats = this_col_feats
+            if self.__feats is None:
+                self.__feats = this_col_feats
             else:
-                feats = np.c_[feats, this_col_feats]
-        return feats
+                self.__feats = np.c_[self.__feats, this_col_feats]
+        return self.__feats
 
 
 

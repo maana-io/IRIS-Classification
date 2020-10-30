@@ -14,6 +14,8 @@ resolvers = {
         #'train': lambda value, info, **args: train(args['trainingTask']),
         'train_batch': lambda value, info, **args: train_batch(args['candidates'], args['training_data'],
             args['params'], args['model_id']),
+        'train_from_local_data': lambda value, info, **args: train_from_local_data(args['candidates'],
+                args['schema'], args['training_data_file_name'], args['params'], args['model_id']),
         'get_training_results': lambda value, info, **args: get_training_results(args['model_id']),
         'all_training_results': lambda value, info, **args: all_training_results(),
         'delete_training_results': lambda value, info, **args: delete_training_results(args['model_id']),
@@ -40,6 +42,9 @@ resolvers = {
         'addCandidate':  lambda value, info, **args: addToList(args['addThis'], args.get('toThis', None)),
         #'createTrainingTasks': lambda value, info, **args:  createTrainingTasks(args['candidates'],
         #        args['training_data'], args['params']),
+
+        'mergeDatasets':  lambda value, info, **args: mergeDatasets(args['datasets']),
+        'mergeLabeledDatasets':  lambda value, info, **args: mergeLabeledDatasets(args['datasets']),
 
         'addFeaturizer':  lambda value, info, **args: addToList(args['addThis'], args.get('toThis', None)),
         'subsetFeatures': lambda value, info, **args:  subsetFeatures(args['dataset'], args['selectedFeatures']),

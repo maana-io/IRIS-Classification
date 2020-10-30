@@ -501,6 +501,12 @@ type Query {
     topNRFEFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!, topN: Int!): [Feature!]!
     topNPctRFEFeatures(dataset: LabeledDatasetInput!, config: ModelConfigurationInput!, pct: Float!): [Feature!]!
 
+    mergeDatasets(datasets: [DatasetInput!]!): Dataset!
+    mergeLabeledDatasets(datasets: [LabeledDatasetInput!]!): LabeledDataset!
+
+    train_from_local_data(candidates: [CandidateModelInput!]!, schema: LabeledDatasetInput!, training_data_file_name: String!,
+                                                     params: ModelSelectionParametersInput!, model_id: ID!): ModelSelectionResults!
+
     # Enum type helpers
     numericalFeatureType: String!
     categoricalFeatureType: String!

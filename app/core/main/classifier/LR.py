@@ -22,7 +22,7 @@ class LR(object):
             self.__model = None
         else:
             self.__model = LogisticRegression(penalty=self.__penalty, dual=self.__dual, solver=self.__solver, multi_class=self.__multi_class,
-                                              class_weight=self.__class_weight, fit_intercept=self.__fit_intercept)
+                                              class_weight=self.__class_weight, fit_intercept=self.__fit_intercept, verbose=0)
 
 
 
